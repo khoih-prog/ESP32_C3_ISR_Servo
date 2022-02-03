@@ -6,6 +6,8 @@
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](#Contributing)
 [![GitHub issues](https://img.shields.io/github/issues/khoih-prog/ESP32_C3_ISR_Servo.svg)](http://github.com/khoih-prog/ESP32_C3_ISR_Servo/issues)
 
+<a href="https://www.buymeacoffee.com/khoihprog6" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+
 ---
 ---
 
@@ -104,7 +106,7 @@ This [**ESP32_C3_ISR_Servo** library](https://github.com/khoih-prog/ESP32_C3_ISR
 ### Releases v1.1.0
 
 1. Basic 16 ISR-based servo controllers using 1 hardware timer for ESP32_C3.
-2. Tested with ESP32 core v2.0.0-rc1 and v1.0.6
+2. Tested with ESP32 core v2.0.2+ and v1.0.6
 
 
 ---
@@ -112,9 +114,8 @@ This [**ESP32_C3_ISR_Servo** library](https://github.com/khoih-prog/ESP32_C3_ISR
 
 ## Prerequisites
 
-1. [`Arduino IDE 1.8.15+`](https://www.arduino.cc/en/Main/Software)
-2. [`ESP32 core 1.0.6+`](https://github.com/espressif/arduino-esp32/releases) for ESP32_C3 boards
-3. [`ESP32-S2/C3 Core 2.0.0-rc1+`](https://github.com/espressif/arduino-esp32) for ESP32-S2/C3-based boards to use experimental ESP32 core v2.0.0-rc1.
+1. [`Arduino IDE 1.8.19+` for Arduino](https://github.com/arduino/Arduino). [![GitHub release](https://img.shields.io/github/release/arduino/Arduino.svg)](https://github.com/arduino/Arduino/releases/latest)
+2. [`ESP32-S2/C3 Core 2.0.2+`](https://github.com/espressif/arduino-esp32) for ESP32-S2/C3-based boards.
 
 ---
 
