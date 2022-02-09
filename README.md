@@ -115,7 +115,7 @@ This [**ESP32_C3_ISR_Servo** library](https://github.com/khoih-prog/ESP32_C3_ISR
 ## Prerequisites
 
 1. [`Arduino IDE 1.8.19+` for Arduino](https://github.com/arduino/Arduino). [![GitHub release](https://img.shields.io/github/release/arduino/Arduino.svg)](https://github.com/arduino/Arduino/releases/latest)
-2. [`ESP32-S2/C3 Core 2.0.2+`](https://github.com/espressif/arduino-esp32) for ESP32-S2/C3-based boards.
+2. [`ESP32 Core 2.0.2+`](https://github.com/espressif/arduino-esp32) for ESP32-based boards. [![Latest release](https://img.shields.io/github/release/espressif/arduino-esp32.svg)](https://github.com/espressif/arduino-esp32/releases/latest/)
 
 ---
 
