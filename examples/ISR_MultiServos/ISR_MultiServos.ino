@@ -2,21 +2,21 @@
   ISR_MultiServos.ino
   For ESP32_C3 boards
   Written by Khoi Hoang
-  
-  Built by Khoi Hoang https://github.com/khoih-prog/ESP32_ISR_Servo
+
+  Built by Khoi Hoang https://github.com/khoih-prog/ESP32_C3_ISR_Servo
   Licensed under MIT license
-  
+
   The ESP32_C3 has two timer groups, each one with one general purpose hardware timers. All the timers
   are based on 64 bits counters and 16 bit prescalers
   The timer counters can be configured to count up or down and support automatic reload and software reload
   They can also generate alarms when they reach a specific value, defined by the software.
   The value of the counter can be read by the software program.
-  
+
   Now these new 16 ISR-based PWM servo contro uses only 1 hardware timer.
   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
   Therefore, their executions are not blocked by bad-behaving functions / tasks.
   This important feature is absolutely necessary for mission-critical tasks.
-  
+
   Notes:
   Special design is necessary to share data between interrupt code and the rest of your program.
   Variables usually need to be "volatile" types. Volatile tells the compiler to avoid optimizations that assume
@@ -26,12 +26,6 @@
   if the interrupt changes a multi-byte variable between a sequence of instructions, it can be read incorrectly.
   If your data is multiple variables, such as an array and a count, usually interrupts need to be disabled
   or the entire sequence of your code which accesses the data.
-  
-  Version: 1.1.0
-
-  Version Modified By  Date        Comments
-  ------- -----------  ----------  -----------
-  1.1.0   K Hoang      03/08/2021  Initial coding for ESP32_C3
 *****************************************************************************************************************************/
 
 /****************************************************************************************************************************
@@ -76,7 +70,7 @@
 *****************************************************************************************************************************/
 
 #if !defined( ARDUINO_ESP32C3_DEV )
-  #error This code is intended to run on the ESP32_C3 platform! Please check your Tools->Board setting.
+	#error This code is intended to run on the ESP32_C3 platform! Please check your Tools->Board setting.
 #endif
 
 #define TIMER_INTERRUPT_DEBUG       1
@@ -87,8 +81,10 @@
 
 #include "ESP32_C3_ISR_Servo.h"
 
+// Don't use PIN_D1 in core v2.0.0 and v2.0.1. Check https://github.com/espressif/arduino-esp32/issues/5868
+// Don't use PIN_D2 with ESP32_C3 (crash)
+
 //See file .../hardware/espressif/esp32/variants/(esp32|doitESP32devkitV1)/pins_arduino.h
-#define LED_BUILTIN       2         // Pin D2 mapped to pin GPIO2/ADC12 of ESP32, control on-board LED
 #define PIN_LED           2         // Pin D2 mapped to pin GPIO2/ADC12 of ESP32, control on-board LED
 
 #define PIN_D0            0         // Pin D0 mapped to pin GPIO0/BOOT/ADC11/TOUCH1 of ESP32
@@ -111,71 +107,77 @@ int servoIndex2  = -1;
 
 void setup()
 {
-  Serial.begin(115200);
-  while (!Serial);
+	Serial.begin(115200);
 
-  delay(200);
+	while (!Serial && millis() < 5000);
 
-  Serial.print(F("\nStarting ISR_MultiServos on ")); Serial.println(ARDUINO_BOARD);
-  Serial.println(ESP32_C3_ISR_SERVO_VERSION);
-  
-  //Select ESP32 timer USE_ESP32_TIMER_NO
-  ESP32_ISR_Servos.useTimer(USE_ESP32_TIMER_NO);
+  delay(500);
 
-  servoIndex1 = ESP32_ISR_Servos.setupServo(PIN_D5, MIN_MICROS, MAX_MICROS);
-  servoIndex2 = ESP32_ISR_Servos.setupServo(PIN_D6, MIN_MICROS, MAX_MICROS);
+	Serial.print(F("\nStarting ISR_MultiServos on "));
+	Serial.println(ARDUINO_BOARD);
+	Serial.println(ESP32_C3_ISR_SERVO_VERSION);
 
-  if (servoIndex1 != -1)
-    Serial.println(F("Setup Servo1 OK"));
-  else
-    Serial.println(F("Setup Servo1 failed"));
+	//Select ESP32 timer USE_ESP32_TIMER_NO
+	ESP32_ISR_Servos.useTimer(USE_ESP32_TIMER_NO);
 
-  if (servoIndex2 != -1)
-    Serial.println(F("Setup Servo2 OK"));
-  else
-    Serial.println(F("Setup Servo2 failed"));
+	servoIndex1 = ESP32_ISR_Servos.setupServo(PIN_D5, MIN_MICROS, MAX_MICROS);
+	servoIndex2 = ESP32_ISR_Servos.setupServo(PIN_D6, MIN_MICROS, MAX_MICROS);
+
+	if (servoIndex1 != -1)
+		Serial.println(F("Setup Servo1 OK"));
+	else
+		Serial.println(F("Setup Servo1 failed"));
+
+	if (servoIndex2 != -1)
+		Serial.println(F("Setup Servo2 OK"));
+	else
+		Serial.println(F("Setup Servo2 failed"));
 }
 
 void loop()
 {
-  int position;
+	int position;
 
-  if ( ( servoIndex1 != -1) && ( servoIndex2 != -1) )
-  {
-    for (position = 0; position <= 180; position++)
-    {
-      // goes from 0 degrees to 180 degrees
-      // in steps of 1 degree
+	if ( ( servoIndex1 != -1) && ( servoIndex2 != -1) )
+	{
+		for (position = 0; position <= 180; position++)
+		{
+			// goes from 0 degrees to 180 degrees
+			// in steps of 1 degree
 
-      if (position % 30 == 0)
-      {
-        Serial.print(F("Servo1 pos = ")); Serial.print(position);
-        Serial.print(F(", Servo2 pos = ")); Serial.println(180 - position);
-      }
+			if (position % 30 == 0)
+			{
+				Serial.print(F("Servo1 pos = "));
+				Serial.print(position);
+				Serial.print(F(", Servo2 pos = "));
+				Serial.println(180 - position);
+			}
 
-      ESP32_ISR_Servos.setPosition(servoIndex1, position);
-      ESP32_ISR_Servos.setPosition(servoIndex2, 180 - position);
-      // waits 30ms for the servo to reach the position
-      delay(30);
-    }
-    
-    delay(5000);
+			ESP32_ISR_Servos.setPosition(servoIndex1, position);
+			ESP32_ISR_Servos.setPosition(servoIndex2, 180 - position);
+			// waits 30ms for the servo to reach the position
+			delay(30);
+		}
 
-    for (position = 180; position >= 0; position--)
-    {
-      // goes from 180 degrees to 0 degrees
-      if (position % 30 == 0)
-      {
-        Serial.print(F("Servo1 pos = ")); Serial.print(position);
-        Serial.print(F(", Servo2 pos = ")); Serial.println(180 - position);
-      }
+		delay(5000);
 
-      ESP32_ISR_Servos.setPosition(servoIndex1, position);
-      ESP32_ISR_Servos.setPosition(servoIndex2, 180 - position);
-      // waits 30ms for the servo to reach the position
-      delay(30);
-    }
-    
-    delay(5000);
-  }
+		for (position = 180; position >= 0; position--)
+		{
+			// goes from 180 degrees to 0 degrees
+			if (position % 30 == 0)
+			{
+				Serial.print(F("Servo1 pos = "));
+				Serial.print(position);
+				Serial.print(F(", Servo2 pos = "));
+				Serial.println(180 - position);
+			}
+
+			ESP32_ISR_Servos.setPosition(servoIndex1, position);
+			ESP32_ISR_Servos.setPosition(servoIndex2, 180 - position);
+			// waits 30ms for the servo to reach the position
+			delay(30);
+		}
+
+		delay(5000);
+	}
 }
